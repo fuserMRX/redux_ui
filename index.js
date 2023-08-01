@@ -3,7 +3,7 @@
         todo: {
         id: 0,
             name: 'Learn Redux',
-                complete: false,
+            complete: false,
     }
 }
 
@@ -28,6 +28,12 @@
 {
     type: 'REMOVE_GOAL',
         id: 0
+}
+
+function todos(state = [], action) {
+    if (action.type === 'ADD_TODO') {
+        return state.concat([action.todo]);
+    }
 }
 
 function createStore() {
