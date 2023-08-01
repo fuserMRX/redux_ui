@@ -1,3 +1,5 @@
+
+// different types of events/actions
 {
     type: 'ADD_TODO',
         todo: {
@@ -30,13 +32,14 @@
         id: 0
 }
 
+// reducer
 function todos(state = [], action) {
     if (action.type === 'ADD_TODO') {
         return state.concat([action.todo]);
     }
 }
 
-function createStore() {
+function createStore(reducer) {
     // The store should have four parts
     // 1. The state
     // 2. Get the state
@@ -55,15 +58,32 @@ function createStore() {
         }
     };
 
+    const dispatch = (action) => {
+        // 1 - call todos
+        state = reducer(state, action);
+        // 2 - loop over listeners and invoke them
+        listeners.forEach((listener) => listener());
+    };
+
     return {
         getState,
         subscribe,
+        dispatch,
     }
 }
 
-const store = createStore();
+const store = createStore(todos);
 
 // whenever state changes inside a store we call a function inside
 const unsubscribe = store.subscribe(() => {
 
 });
+
+store.dispatch({
+    type: 'ADD_TODO',
+    todo: {
+        id: 0,
+        name: 'Learn Redux',
+        complete: false,
+    }
+})
