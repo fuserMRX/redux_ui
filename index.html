@@ -138,6 +138,17 @@
             return next(action);
         };
 
+        const logger = (store) => (next) => (action) => {
+            console.group(action.type);
+            console.log('The action: ', action);
+            // dispatch will be returned in case logger is the last one in the middleware chain
+            const result = next(action);
+            console.log('The new state: ', store.getState());
+            console.groupEnd();
+
+            return result;
+        };
+
         // reducer
         function todos(state = [], action) {
             switch (action.type) {
@@ -178,7 +189,7 @@
         const store = Redux.createStore(Redux.combineReducers({
             todos,
             goals
-        }), Redux.applyMiddleware(checker));
+        }), Redux.applyMiddleware(checker, logger));
 
         // whenever state changes inside a store we call a function inside
         const unsubscribe = store.subscribe(() => {
