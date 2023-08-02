@@ -3,6 +3,7 @@
 
 <head>
     <title>Todos/Goals</title>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/redux/4.0.5/redux.min.js'></script>
 </head>
 
 <body>
@@ -25,38 +26,39 @@
         }
 
         // Library code
-        function createStore(reducer) {
-            // The store should have four parts
-            // 1. The state
-            // 2. Get the state
-            // 3. Listen to changes on the state
-            // 4. Update the state
-            let state;
-            let listeners = [];
+        // function createStore(reducer) {
+        //     // The store should have four parts
+        //     // 1. The state
+        //     // 2. Get the state
+        //     // 3. Listen to changes on the state
+        //     // 4. Update the state
+        //     let state;
+        //     let listeners = [];
 
-            const getState = () => state;
-            const subscribe = (listener) => {
-                // subscribe
-                listeners.push(listener);
-                return () => {
-                    // unsubscribe
-                    listeners = listeners.filter((l) => l !== listener);
-                }
-            };
+        //     const getState = () => state;
+        //     const subscribe = (listener) => {
+        //         // subscribe
+        //         listeners.push(listener);
+        //         return () => {
+        //             // unsubscribe
+        //             listeners = listeners.filter((l) => l !== listener);
+        //         }
+        //     };
 
-            const dispatch = (action) => {
-                // 1 - call todos
-                state = reducer(state, action);
-                // 2 - loop over listeners and invoke them
-                listeners.forEach((listener) => listener());
-            };
+        //     const dispatch = (action) => {
+        //         // 1 - call todos
+        //         state = reducer(state, action);
+        //         // 2 - loop over listeners and invoke them
+        //         listeners.forEach((listener) => listener());
+        //     };
 
-            return {
-                getState,
-                subscribe,
-                dispatch,
-            }
-        }
+        //     return {
+        //         getState,
+        //         subscribe,
+        //         dispatch,
+        //     }
+        // }
+
         // App code
         const ADD_TODO = 'ADD_TODO';
         const REMOVE_TODO = 'REMOVE_TODO';
@@ -127,6 +129,7 @@
             }
         }
 
+        // Library approach
         function app(state = {}, action) {
             return {
                 todos: todos(state.todos, action),
@@ -134,7 +137,13 @@
             }
         }
 
-        const store = createStore(app);
+        // Library approach
+        // const store = createStore(app);
+
+        const store = Redux.createStore(Redux.combineReducers({
+            todos,
+            goals
+        }));
 
         // whenever state changes inside a store we call a function inside
         const unsubscribe = store.subscribe(() => {
@@ -158,7 +167,7 @@
             node.appendChild(text);
             node.appendChild(removeBtn);
             node.style.textDecoration = todo.complete ? 'line-through' : 'none';
-            
+
             node.addEventListener('click', () => {
                 store.dispatch(toggleTodoAction(todo.id));
             });
@@ -203,7 +212,7 @@
             }))
         }
 
-        function createRemoveButton(onClick){
+        function createRemoveButton(onClick) {
             const removeBtn = document.createElement('button');
             removeBtn.innerHTML = 'X';
             removeBtn.addEventListener('click', onClick);
