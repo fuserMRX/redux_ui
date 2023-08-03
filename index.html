@@ -121,6 +121,20 @@
             }
         }
 
+        function handleDeleteTodo(todo) {
+            return async (dispatch) => {
+                dispatch(removeTodoAction(todo.id))
+                try {
+                    const result = await API.deleteTodo(todo.id);
+                } catch (e) {
+                    dispatch(addTodoAction(todo))
+                    alert(`En error occured please try again`);
+                }
+            }
+        }
+
+        // middleware
+
         function checkAndDispatch(store, action) {
             if (
                 action.type === ADD_TODO &&
@@ -168,7 +182,16 @@
             return result;
         };
 
-        // reducer
+        const thunk = (store) => (next) => (action) => {
+            if (typeof action === 'function') {
+                return action(store.dispatch);
+            }
+
+            return next(action);
+        };
+
+
+        // reducers
         function todos(state = [], action) {
             switch (action.type) {
                 case ADD_TODO:
@@ -222,7 +245,7 @@
             todos,
             goals,
             loading,
-        }), Redux.applyMiddleware(checker, logger));
+        }), Redux.applyMiddleware(thunk, checker, logger));
 
         // whenever state changes inside a store we call a function inside
         // const unsubscribe = store.subscribe(() => {
@@ -333,13 +356,7 @@
             }
 
             removeItem = async (todo) => {
-                this.props.store.dispatch(removeTodoAction(todo.id))
-                try {
-                    const result = await API.deleteTodo(todo.id);
-                } catch (e) {
-                    this.props.store.dispatch(addTodoAction(todo))
-                    alert(`En error occured please try again`);
-                }
+                this.props.store.dispatch(handleDeleteTodo(todo));
             }
 
             toggleItem = async (todo) => {
