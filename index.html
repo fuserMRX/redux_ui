@@ -334,8 +334,14 @@
                 }))
             }
 
-            removeItem = (todo) => {
+            removeItem = async (todo) => {
                 this.props.store.dispatch(removeTodoAction(todo.id))
+                try {
+                    const result = await API.deleteTodo(todo.id);
+                } catch (e) {
+                    this.props.store.dispatch(addTodoAction(todo))
+                    alert(`En error occured please try again`);
+                }
             }
 
             toggleItem = (todo) => {
@@ -375,8 +381,15 @@
                 }))
             }
 
-            removeItem = (goal) => {
+            removeItem = async(goal) => {
                 this.props.store.dispatch(removeGoalAction(goal.id))
+
+                try {
+                    const result = await API.deleteGoal(goal.id);
+                } catch (e) {
+                    this.props.store.dispatch(addGoalAction(goal))
+                    alert(`En error occured please try again`);
+                }
             }
 
             render() {
