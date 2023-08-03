@@ -344,8 +344,15 @@
                 }
             }
 
-            toggleItem = (todo) => {
+            toggleItem = async (todo) => {
                 this.props.store.dispatch(toggleTodoAction(todo.id))
+                try{
+                    const result = await API.saveTodoToggle(todo.id);
+                } catch(e){
+                    alert(`En error occured  => ${e} please try again`);
+                    this.props.store.dispatch(toggleTodoAction(todo.id))
+                }
+                
             }
 
             render() {
