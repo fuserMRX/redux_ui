@@ -121,15 +121,39 @@
             }
         }
 
+        function handleToggle(id) {
+            return async (dispatch) => {
+                dispatch(toggleTodoAction(id));
+
+                try {
+                    const result = await API.saveTodoToggle(id);
+                } catch (e) {
+                    alert(`En error occured  => ${e} please try again`);
+                    dispatch(toggleTodoAction(id))
+                }
+            }
+        }
+
         function handleDeleteTodo(todo) {
             return async (dispatch) => {
-                dispatch(removeTodoAction(todo.id))
+                dispatch(removeTodoAction(todo.id));
                 try {
                     const result = await API.deleteTodo(todo.id);
                 } catch (e) {
-                    dispatch(addTodoAction(todo))
+                    dispatch(addTodoAction(todo));
                     alert(`En error occured please try again`);
                 }
+            }
+        }
+
+        function handleAddTodo(name, cb) {
+            return (dispatch) => {
+                return API.saveTodo(name)
+                    .then((todo) => {
+                        dispatch(addTodoAction(todo))
+                        cb();
+                    })
+                    .catch(() => alert('There was an error. Try again.'))
             }
         }
 
@@ -369,13 +393,12 @@
 
         class Todos extends React.Component {
             addItem = (e) => {
-                e.preventDefault()
-                return API.saveTodo(this.input.value)
-                    .then((todo) => {
-                        this.props.store.dispatch(addTodoAction(todo))
-                        this.input.value = ''
-                    })
-                    .catch(() => alert('There was an error. Try again.'))
+                e.preventDefault();
+
+                this.props.store.dispatch(handleAddTodo(
+                    this.input.value,
+                    () => this.input.value = ''
+                ));
             }
 
             removeItem = async (todo) => {
@@ -383,14 +406,7 @@
             }
 
             toggleItem = async (todo) => {
-                this.props.store.dispatch(toggleTodoAction(todo.id))
-                try {
-                    const result = await API.saveTodoToggle(todo.id);
-                } catch (e) {
-                    alert(`En error occured  => ${e} please try again`);
-                    this.props.store.dispatch(toggleTodoAction(todo.id))
-                }
-
+                this.props.store.dispatch(handleToggle(todo.id));
             }
 
             render() {
